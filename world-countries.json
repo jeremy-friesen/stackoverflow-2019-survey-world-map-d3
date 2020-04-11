@@ -35231,7 +35231,7 @@
           ],
           "type": "MultiPolygon",
           "properties": {
-            "name": "The Bahamas",
+            "name": "Bahamas",
             "Alpha-2": "BS"
           },
           "id": "BHS"
@@ -35362,7 +35362,7 @@
           ],
           "type": "Polygon",
           "properties": {
-            "name": "Brunei",
+            "name": "Brunei Darussalam",
             "Alpha-2": "BN"
           },
           "id": "BRN"
@@ -35733,7 +35733,7 @@
           ],
           "type": "Polygon",
           "properties": {
-            "name": "Republic of the Congo",
+            "name": "Congo, Republic of the...",
             "Alpha-2": "CG"
           },
           "id": "COG"
@@ -36840,7 +36840,7 @@
           ],
           "type": "Polygon",
           "properties": {
-            "name": "Libya",
+            "name": "Libyan Arab Jamahiriya",
             "Alpha-2": "LY"
           },
           "id": "LBY"
@@ -36945,7 +36945,7 @@
           ],
           "type": "Polygon",
           "properties": {
-            "name": "Moldova",
+            "name": "Republic of Moldova",
             "Alpha-2": "MD"
           },
           "id": "MDA"
@@ -36992,7 +36992,7 @@
           ],
           "type": "Polygon",
           "properties": {
-            "name": "Macedonia",
+            "name": "The former Yugoslav Republic of Macedonia",
             "Alpha-2": "MK"
           },
           "id": "MKD"
@@ -37680,7 +37680,7 @@
           ],
           "type": "MultiPolygon",
           "properties": {
-            "name": "Russia",
+            "name": "Russian Federation",
             "Alpha-2": "RU"
           },
           "id": "RUS"
@@ -37913,7 +37913,7 @@
           ],
           "type": "Polygon",
           "properties": {
-            "name": "Republic of Serbia",
+            "name": "Serbia",
             "Alpha-2": "RS"
           },
           "id": "SRB"
@@ -38020,7 +38020,7 @@
           ],
           "type": "Polygon",
           "properties": {
-            "name": "Syria",
+            "name": "Syrian Arab Republic",
             "Alpha-2": "SY"
           },
           "id": "SYR"
@@ -38118,7 +38118,7 @@
           ],
           "type": "Polygon",
           "properties": {
-            "name": "East Timor",
+            "name": "Timor-Leste",
             "Alpha-2": "TL"
           },
           "id": "TLS"
@@ -38325,7 +38325,7 @@
           ],
           "type": "MultiPolygon",
           "properties": {
-            "name": "United States of America",
+            "name": "United States",
             "Alpha-2": "US"
           },
           "id": "USA"
@@ -38358,7 +38358,7 @@
           ],
           "type": "Polygon",
           "properties": {
-            "name": "Venezuela",
+            "name": "Venezuela, Bolivarian Republic of...",
             "Alpha-2": "VE"
           },
           "id": "VEN"
@@ -38374,7 +38374,7 @@
           ],
           "type": "Polygon",
           "properties": {
-            "name": "Vietnam",
+            "name": "Viet Nam",
             "Alpha-2": "VN"
           },
           "id": "VNM"
