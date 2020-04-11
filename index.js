@@ -12,6 +12,10 @@ var initX;
 var s = 1;
 var mouseClicked = false;
 
+
+//This variable will be used to store the country name when the user clicks on a country
+var countryClicked = '';
+
 var projection = d3.geo.mercator()
   .scale(153)
   .translate([width / 2, height / 1.5])
@@ -64,7 +68,7 @@ d3.json("colours.json", function(error, data){
     languageColours[lang] = data[lang].color;
   }
 });
-console.log(languageColours);
+//console.log(languageColours);
 
 var countryData = {};
 d3.json("data.json", function(error, data){
@@ -72,7 +76,7 @@ d3.json("data.json", function(error, data){
     countryData[country] = data[country]
   }
 });
-console.log(countryData);
+//console.log(countryData);
 
 var topLanguages = [];
 var topLanguagesColours = [];
@@ -80,8 +84,8 @@ var topLanguagesColours = [];
 //det json data and draw it
 d3.json("world-countries.json", function (error, world) {
   if (error) return console.error(error);
-  console.log(world);
-  //console.log(topojson.feature(world, world.objects.countries));
+  //console.log(world);
+  ////console.log(topojson.feature(world, world.objects.countries));
   //countries
   g.append("g")
     .attr("class", "boundary")
@@ -99,7 +103,7 @@ d3.json("world-countries.json", function (error, world) {
         colour = languageColours[languages[0]];
 
         if(colour == undefined){
-          console.log('language issue: ' + languages[0] + ', country: ' + d.properties.name);
+          //console.log('language issue: ' + languages[0] + ', country: ' + d.properties.name);
           colour = "#f0f0f0";
         } else{
 
@@ -109,7 +113,7 @@ d3.json("world-countries.json", function (error, world) {
           }
         }
       }else{
-        console.log("Country issue: " + d.properties.name);
+        //console.log("Country issue: " + d.properties.name);
       }
       return "fill:" + colour + ";";
     })
@@ -121,10 +125,10 @@ d3.json("world-countries.json", function (error, world) {
     .attr("d", path);
 });
 
-console.log("topLanguages: ");
-console.log(topLanguages);
-console.log("topLanguagesColours: ");
-console.log(topLanguagesColours);
+//console.log("topLanguages: ");
+//console.log(topLanguages);
+//console.log("topLanguagesColours: ");
+//console.log(topLanguagesColours);
 
 
 // legend - NOT WORKING
@@ -164,6 +168,7 @@ legend.append('text')
 // tooltip
 function showTooltip(d) {
   label = d.properties.name;
+  
   var mouse = d3.mouse(svg.node())
     .map(function (d) { return parseInt(d); });
   tooltip.classed("hidden", false)
@@ -177,7 +182,20 @@ d3.selection.prototype.moveToFront = function () {
     this.parentNode.appendChild(this);
   });
 };
-function selected() {
+
+//This functon will highlight the country pressed and grab the country name 
+function selected(d) {
+ 
+  if (countryClicked != ''){ //clears the countryClicked variable when user presses new country 
+      countryClicked = '';
+      countryClicked += d.properties.name; //stores country name in variable 
+  }
+
+  countryClicked = d.properties.name;  //stores country name in variable
+  console.log(countryClicked); 
+
+  //Aabids function for his graphs can go here and he can pass it country name
+  
   d3.select('.selected').classed('selected', false);
   d3.select(this).classed('selected', true);
   d3.select(this).moveToFront();
