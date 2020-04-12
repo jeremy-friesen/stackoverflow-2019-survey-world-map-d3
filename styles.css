@@ -37,3 +37,10 @@ div.tooltip {
 .idk{
   color: #f0f0f0;
 }
+
+.legend{
+  padding: 5px;
+  font: 10px sans-serif;
+  background: yellow;
+  box-shadow: 2px 2px 1px #888;
+}

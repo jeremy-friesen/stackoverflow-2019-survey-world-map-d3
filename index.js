@@ -16,6 +16,8 @@ var mouseClicked = false;
 //This variable will be used to store the country name when the user clicks on a country
 var countryClicked = '';
 
+
+
 var projection = d3.geo.mercator()
   .scale(153)
   .translate([width / 2, height / 1.5])
@@ -81,6 +83,7 @@ d3.json("data.json", function(error, data){
 var topLanguages = [];
 var topLanguagesColours = [];
 
+
 //det json data and draw it
 d3.json("world-countries.json", function (error, world) {
   if (error) return console.error(error);
@@ -90,6 +93,7 @@ d3.json("world-countries.json", function (error, world) {
   g.append("g")
     .attr("class", "boundary")
     .selectAll("boundary")
+    
     .data(topojson.feature(world, world.objects.countries1).features)
     .enter()
     .append("path")
@@ -109,6 +113,7 @@ d3.json("world-countries.json", function (error, world) {
 
           if(topLanguages.indexOf(languages[0]) == -1){
             topLanguages.push(languages[0]);
+           
             topLanguagesColours.push(colour);
           }
         }
@@ -117,6 +122,7 @@ d3.json("world-countries.json", function (error, world) {
       }
       return "fill:" + colour + ";";
     })
+    
     .on('click', selected)
     .on("mousemove", showTooltip)
     .on("mouseout", function (d, i) {
@@ -125,26 +131,25 @@ d3.json("world-countries.json", function (error, world) {
     .attr("d", path);
 });
 
-//console.log("topLanguages: ");
-//console.log(topLanguages);
-//console.log("topLanguagesColours: ");
-//console.log(topLanguagesColours);
+console.log("topLanguages: ");
+console.log(topLanguages);
+console.log("topLanguagesColours: ");
+console.log(topLanguagesColours);
 
 
 // legend - NOT WORKING
-/*
-var color = d3.scaleOrdinal()
-  //.domain(topLanguages)
+
+var color = d3.scale.ordinal()
+  .domain(topLanguages)
   .range(d3.schemeCategory20);
 
 var legendRectSize = 18;
 var legendSpacing = 4;
 
-var legend = svg.selectAll('.legend')
-  .data(color.domain(topLanguages.length))
-  .enter()
-  .append('g')
-  .attr('class', 'legend')
+var legend = svg.selectAll(".legend")
+  .data(topLanguages)
+  
+  .attr("class", "legend")
   .attr('transform', function (d, i) {
     var height = legendRectSize + legendSpacing;
     var offset = height * color.domain().length / 2;
@@ -163,9 +168,10 @@ legend.append('text')
   .attr('x', legendRectSize + legendSpacing)
   .attr('y', legendRectSize - legendSpacing)
   .text(function (d, i) { return topLanguages[i]; });
-*/
 
-// tooltip
+g.append("legend")
+
+  // tooltip
 function showTooltip(d) {
   label = d.properties.name;
   
