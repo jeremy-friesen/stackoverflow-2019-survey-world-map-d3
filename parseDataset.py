@@ -40,8 +40,6 @@ with open('../survey_results_public.csv', newline='') as csvfile:
     read = csv.reader(csvfile, delimiter=',')
 
     for row in read:
-        if(row[6] == "Country"):
-            continue
         country = row[6]
         languages = row[43].split(';')
         platforms = row[48].split(';')

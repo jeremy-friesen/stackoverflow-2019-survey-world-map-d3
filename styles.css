@@ -50,3 +50,9 @@ div.tooltip {
   background: yellow;
   box-shadow: 2px 2px 1px #888;
 }
+
+#svgChart{
+  background-color: white;
+  border: 1px solid black;
+
+}

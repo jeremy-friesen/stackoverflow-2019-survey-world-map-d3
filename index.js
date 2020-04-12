@@ -1,6 +1,13 @@
 var width = 962,
 rotated = 90,
 height = 502;
+var colourList = ['lightgreen', 'green', 'blue', 'palevioletred', 'red', 'yellow']
+
+//Store parsed data
+var parsedData;
+d3.json("/data.json", function(data) {
+  parsedData = data;
+});
 
 //track where mouse was clicked
 var initX;
@@ -273,7 +280,8 @@ function selected(d) {
   console.log(countryClicked); 
 
   //Aabids function for his graphs can go here and he can pass it country name
-  
+  displayGraphs(countryClicked);
+
   d3.select('.selected').classed('selected', false);
   d3.select(this).classed('selected', true);
   d3.select(this).moveToFront();
@@ -306,4 +314,136 @@ function zoomed() {
   //adjust the stroke width based on zoom level
   d3.selectAll(".boundary")
     .style("stroke-width", 1 / s);
+}
+
+///Create graphs
+
+
+//Called when a country on the map is clicked
+function displayGraphs(countryClicked){
+  //use the parsed data
+  console.log(parsedData[countryClicked]);
+  let data = parsedData[countryClicked].languages;
+  console.log(data);
+  //console.log(Object.keys(data));
+  //console.log(Object.values(data));
+
+  let newData = [];
+
+  let maxLength = 10;
+  if (Object.keys(data).length < maxLength){
+    maxLength = Object.keys(data).length;
+  }
+  for (let i = 0; i < maxLength; i++){
+    newData.push({'x': `${Object.keys(data)[i]}`, "y": `${Object.values(data)[i]}`});
+  }
+
+  console.log("newData = ", newData);
+
+  let div = document.getElementById('vis1');
+  if(div.hasChildNodes()){
+    let removeTable = document.getElementById('svgChart');
+    removeTable.parentNode.removeChild(removeTable);
+  }
+
+  const margin = 50;
+  const width = 500;
+  const height = 400;
+  const chartWidth = width - 2 * margin;
+  const chartHeight = height - 2 * margin;
+
+  const colourScale = d3.scale.ordinal()
+                        //.domain([0, d3.max(data, d => d.y)])
+                        .domain([0, 5])
+                        .range(colourList);
+
+  const xScale = d3.scale.ordinal()
+                   .rangeRoundBands([0, chartWidth], .1)
+                   .domain(newData.map((s) => s.x))
+  console.log("domain = ", xScale.domain())
+
+  const yScale = d3.scale.linear()
+                   .range([chartHeight, 0])
+                   .domain([0, d3.max(newData, d => d.y)]);
+  console.log("domain = ", yScale.domain())
+
+  const xAxis = d3.svg.axis()
+                  .scale(xScale)
+                  .orient("bottom")
+
+  const yAxis = d3.svg.axis()
+                  .scale(yScale)
+                  .orient("left")
+  
+  const svg = d3.select('#vis1')
+                .append('svg')
+                  .attr('id', 'svgChart')
+                  .attr('width', width)
+                  .attr('height', height);
+  
+  const canvas = svg.append('g')
+                      .attr('transform', `translate(${margin}, ${margin})`);
+  
+  // chart title
+  svg.append('text')
+        .attr('x', margin + chartWidth / 1.75)
+        .attr('y', margin - 20)
+        .attr('text-anchor', 'middle')
+        .text(`Top ${maxLength} Languages in ${countryClicked}`);
+
+  // x-axis and label
+  canvas.append('g')
+           .attr('transform', `translate(${margin}, ${chartHeight})`)
+           .call(xAxis)
+          .attr('font-size', 10);
+
+
+  svg.append('text')
+         .attr('x', margin + chartWidth / 2 + margin)
+         .attr('y', chartHeight + 2 * margin - 15)
+         .attr('text-anchor', 'middle')
+         .text('Language');
+
+  // y-axis and label
+  canvas.append('g')
+           .attr('transform', `translate(50, 0)`)
+           .call(yAxis);
+
+  svg.append('text')
+         .attr('x', margin + -(chartWidth / 1.7))
+         .attr('y', margin)
+         .attr('transform', 'rotate(-90)')
+         .attr('text-anchor', 'middle')
+         .text('Count');
+  
+  // the bar chart
+  const bars = canvas.selectAll('rect')
+                     .data(newData)
+                     .enter()
+                        .append('rect')
+                            .attr('x', (data) => margin + xScale(data.x))
+                            .attr('y', chartHeight)
+                            .attr('height', 0)
+                            .attr('width', xScale.rangeBand())
+                            .attr('fill', 'blue')
+                            .on('mouseenter', function(source, index) {
+                                d3.select(this)
+                                  .transition()
+                                  .duration(200)
+                                  .attr('opacity', 0.5);
+                            })
+                            .on('mouseleave', function(source, index) {
+                              d3.select(this)
+                                  .transition()
+                                  .duration(200)
+                                  .attr('opacity', 1.0);
+                            });
+
+  bars.transition()
+      .ease("elastic")
+      .duration(800)
+      .delay((data, index) => index * 50)
+      .attr('y', (data) => yScale(data.y))
+      .attr('height', (data)  => chartHeight - yScale(data.y))
+
 }
