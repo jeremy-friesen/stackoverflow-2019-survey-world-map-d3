@@ -2,10 +2,6 @@ var width = 962,
 rotated = 90,
 height = 502;
 
-//countries which have states, needed to toggle visibility
-//for USA/ etc. either show countries or states, not both
-var usa, canada;
-var states; //track states
 //track where mouse was clicked
 var initX;
 //track scale only rotate when s === 1
@@ -17,18 +13,17 @@ var mouseClicked = false;
 var countryClicked = '';
 
 
-
 var projection = d3.geo.mercator()
   .scale(153)
   .translate([width / 2, height / 1.5])
-  .rotate([rotated, 0, 0]); //center on USA because 'murica
+  .rotate([rotated, 0, 0]);
 
 var zoom = d3.behavior.zoom()
   .scaleExtent([1, 20])
   .on("zoom", zoomed);
 
 var svg = d3.select("body").append("svg")
-  .attr("width", width)
+  .attr("width", width+200)
   .attr("height", height)
   //track where user clicked down
   .on("mousedown", function () {
@@ -50,6 +45,7 @@ function rotateMap(endX) {
   g.selectAll('path')
     .attr('d', path);
 }
+
 //for tooltip
 var offsetL = document.getElementById('map').offsetLeft + 10;
 var offsetT = document.getElementById('map').offsetTop + 10;
@@ -72,19 +68,134 @@ d3.json("colours.json", function(error, data){
 });
 //console.log(languageColours);
 
-var countryData = {};
-d3.json("data.json", function(error, data){
-  for(var country in data){
-    countryData[country] = data[country]
-  }
-});
-//console.log(countryData);
-
 var topLanguages = [];
 var topLanguagesColours = [];
 
+var topPlatforms = [];
 
-//det json data and draw it
+countryTops = {};
+
+// parse country data
+var countryData = {};
+d3.json("data.json", function(error, data){
+  for(var country in data){
+    countryData[country] = data[country];
+
+    // parse top languages
+    var topLanguage = Object.keys(data[country].languages)[0];
+    if (topLanguage == "NA") topLanguage = Object.keys(data[country].languages)[1];
+    if (topLanguage == undefined) topLanguage = "NA";
+    if(topLanguages.indexOf(topLanguage) == -1) {
+      topLanguages.push(topLanguage);
+      topLanguagesColours.push(languageColours[topLanguage]);
+    }
+
+    // parse top platforms
+    var topPlatform = Object.keys(data[country].platforms)[0];
+    if (topPlatform == "NA") topPlatform = Object.keys(data[country].platforms)[1];
+    if (topPlatform == undefined) topPlatform = "NA";
+    if (topPlatforms.indexOf(topPlatform) == -1) {
+      topPlatforms.push(topPlatform);
+    }
+  }
+
+  countryTops = {"top languages": topLanguages, "top platforms": topPlatforms};
+  console.log(countryTops);
+
+  var dropdown = d3.select("body").insert("select", ":first-child")
+    .attr("class", "select")
+
+  dropdown.selectAll("option")
+    .data(Object.keys(countryTops))
+    .enter()
+    .append("option")
+    .attr("value", function (d) { return d; })
+    .text(function (d) {
+      return d;
+      //return d[0].toUpperCase() + d.slice(1, d.length); // capitalize 1st letter
+    });
+    
+  var legendRectSize = 18;
+  var legendSpacing = 4;
+  var legend = svg.append("g")
+    .attr("class", "legend");
+
+  // Handler for dropdown value change
+  var dropdownChange = function () {
+    var selectedAttribute = d3.select(this).property('value');
+    console.log(selectedAttribute);
+    console.log(countryTops[selectedAttribute]);
+    if (selectedAttribute == undefined)
+      selectedAttribute = "top languages";
+
+    var rects = legend
+      .selectAll('rect')
+      .data(countryTops[selectedAttribute], function(d){return d;})
+
+    rects.exit().remove();
+
+    rects.enter()
+      .append('rect')
+      .attr('width', legendRectSize)
+      .attr('height', legendRectSize)
+      .attr('x', width + 20)
+      .attr('y', function (d, i) { return 100 + i * 25 })
+      .attr('fill', function (d, i) {
+        var value = countryTops[selectedAttribute][i]
+        if (selectedAttribute == "top languages") {
+          var ret = topLanguagesColours[topLanguages.indexOf(value)];
+        } else {
+          var ret = d3.scale.ordinal(d3["schemeSet3"])(value);
+        }
+        if (ret == undefined)
+          return "white";
+        return ret;
+      })
+      .attr('stroke', function () { return "black" });
+
+    rects.transition()
+      .attr('y', function (d, i) { return 100 + i * 25 })
+      .attr('fill', function (d, i) {
+        var value = countryTops[selectedAttribute][i]
+        if (selectedAttribute == "top languages") {
+          var ret = topLanguagesColours[topLanguages.indexOf(value)];
+        } else {
+          var ret = d3.scale.category20().domain(countryTops[selectedAttribute])(value);
+          console.log(ret);
+        }
+        if (ret == undefined)
+          return "white";
+        return ret;
+      })
+      .attr('stroke', function () { return "black" });
+
+    var texts = legend.selectAll('text')
+      .data(countryTops[selectedAttribute], function (d) { return d; });
+
+    texts.exit().remove()
+
+    texts.enter()
+      .append('text')
+      .attr('x', width + 50)
+      .attr('y', function (d, i) { return 110 + i * 25 })
+      .text(function (d, i) { return countryTops[selectedAttribute][i]; });
+  
+    texts.transition()
+      .attr('y', function (d, i) { return 110 + i * 25 })
+  };
+
+  dropdown.on("change", dropdownChange);
+  dropdownChange();
+});
+
+
+//console.log(countryData);
+console.log("topLanguages: ");
+console.log(topLanguages);
+console.log("topLanguagesColours: ");
+console.log(topLanguagesColours);
+
+// get json data and draw it
 d3.json("world-countries.json", function (error, world) {
   if (error) return console.error(error);
   //console.log(world);
@@ -93,7 +204,8 @@ d3.json("world-countries.json", function (error, world) {
   g.append("g")
     .attr("class", "boundary")
     .selectAll("boundary")
-    
+    .attr("width", width-200)
+    .attr("height", height)
     .data(topojson.feature(world, world.objects.countries1).features)
     .enter()
     .append("path")
@@ -131,47 +243,7 @@ d3.json("world-countries.json", function (error, world) {
     .attr("d", path);
 });
 
-console.log("topLanguages: ");
-console.log(topLanguages);
-console.log("topLanguagesColours: ");
-console.log(topLanguagesColours);
-
-
-// legend - NOT WORKING
-
-var color = d3.scale.ordinal()
-  .domain(topLanguages)
-  .range(d3.schemeCategory20);
-
-var legendRectSize = 18;
-var legendSpacing = 4;
-
-var legend = svg.selectAll(".legend")
-  .data(topLanguages)
-  
-  .attr("class", "legend")
-  .attr('transform', function (d, i) {
-    var height = legendRectSize + legendSpacing;
-    var offset = height * color.domain().length / 2;
-    var horz = -2 * legendRectSize;
-    var vert = i * height - offset;
-    return 'translate(' + horz + ',' + vert + ')';
-  });
-
-legend.append('rect')
-  .attr('width', legendRectSize)
-  .attr('height', legendRectSize)
-  .style('fill', color)
-  .style('stroke', color);
-
-legend.append('text')
-  .attr('x', legendRectSize + legendSpacing)
-  .attr('y', legendRectSize - legendSpacing)
-  .text(function (d, i) { return topLanguages[i]; });
-
-g.append("legend")
-
-  // tooltip
+// tooltip
 function showTooltip(d) {
   label = d.properties.name;
   

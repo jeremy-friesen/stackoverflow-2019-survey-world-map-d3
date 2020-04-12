@@ -4,7 +4,13 @@ body {
   
 }
 
-svg {
+select {
+  padding-left: 1rem;
+  padding-right: 1rem;
+  margin: 0.5rem;
+}
+
+svg{
   border: 2px solid black;
   background-color: rgb(167, 165, 165);
 }
