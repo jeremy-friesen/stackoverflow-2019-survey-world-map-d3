@@ -284,6 +284,10 @@ function selected(d) {
   displayBarCharts(countryClicked, attribute, 1);
   attribute = "platforms";
   displayBarCharts(countryClicked, attribute, 2);
+  attribute = "yearsCoding";
+  displayBarCharts(countryClicked, attribute, 3);
+  attribute = "developerTypes";
+  displayBarCharts(countryClicked, attribute, 4);
 
   d3.select('.selected').classed('selected', false);
   d3.select(this).classed('selected', true);
@@ -395,7 +399,7 @@ function displayBarCharts(countryClicked, attribute, index){
   const svg = d3.select(`#vis${index}`)
                 .append('svg')
                   .attr('id', `svgChart${index}`)
-                  .attr('class', 'graph')
+                  .attr('class', 'barChart')
                   .attr('width', width)
                   .attr('height', height);
   
