@@ -288,6 +288,11 @@ function selected(d) {
   displayBarCharts(countryClicked, attribute, 3);
   attribute = "developerTypes";
   displayBarCharts(countryClicked, attribute, 4);
+  
+  attribute = "student";
+  displayPieCharts(countryClicked, attribute, 5);
+  attribute = "genders";
+  displayPieCharts(countryClicked, attribute, 6);
 
   d3.select('.selected').classed('selected', false);
   d3.select(this).classed('selected', true);
@@ -399,7 +404,7 @@ function displayBarCharts(countryClicked, attribute, index){
   const svg = d3.select(`#vis${index}`)
                 .append('svg')
                   .attr('id', `svgChart${index}`)
-                  .attr('class', 'barChart')
+                  .attr('class', 'graph')
                   .attr('width', width)
                   .attr('height', height);
   
@@ -472,4 +477,86 @@ function displayBarCharts(countryClicked, attribute, index){
       .attr('y', (d) => yScale(d.y))
       .attr('height', (d)  => chartHeight - yScale(d.y))
 
+}
+
+
+function displayPieCharts(countryClicked, attribute, index){
+  var w = 500;
+  var h = 400;
+  var r = h/2;
+  var color = d3.scale.category10();
+
+  let div = document.getElementById(`vis${index}`);
+  if(div.hasChildNodes()){
+    let removeTable = document.getElementById(`svgChart${index}`);
+    removeTable.parentNode.removeChild(removeTable);
+  }
+
+  console.log(parsedData[countryClicked]);
+  let data = parsedData[countryClicked][attribute];
+  console.log(data);
+  //console.log(Object.keys(data));
+  //console.log(Object.values(data));
+
+  let maxY = Math.max(...Object.values(data));
+  let newData = [];
+
+  let maxLength = 10;
+  if (Object.keys(data).length < maxLength){
+    maxLength = Object.keys(data).length;
+  }
+
+  let totalCount = d3.sum(Object.values(data))
+  console.log("totalCount", totalCount);
+  for (let i = 0; i < maxLength; i++){
+    let percent = Math.round(Object.values(data)[i]/totalCount * 100)
+    console.log("divide = ", percent)
+    newData.push({'category': `${Object.keys(data)[i]}`, "value": `${percent}`});
+  }
+
+  console.log("newData = ", newData);
+
+  var vis = d3.select(`#vis${index}`)
+                .append("svg:svg")
+                  .attr('id', `svgChart${index}`)
+                  .attr('class', 'graph')
+                  .data([newData])
+                  .attr("width", w)
+                  .attr("height", h)
+                  .append("svg:g")
+                    .attr("transform", "translate(" + r * 1.35 + "," + r + ")");
+
+  var pie = d3.layout.pie().value(function(d){return d.value;});
+
+  // Declare an arc generator function
+  var arc = d3.svg.arc().outerRadius(r);
+
+  // Select paths, use arc generator to draw
+  var arcs = vis.selectAll("g.slice").data(pie).enter().append("svg:g").attr("class", "slice");
+  arcs.append("svg:path")
+      .attr("fill", function(d, i){return color(i);})
+      .attr("d", function (d) {return arc(d);})
+  ;
+
+  // Add the text
+  arcs.append("svg:text")
+      .attr("transform", function(d){
+          d.innerRadius = 100; /* Distance of label to the center*/
+          d.outerRadius = r;
+          return "translate(" + arc.centroid(d) + ")";}
+      )
+      .attr("text-anchor", "middle")
+      .text( function(d, i) {return newData[i].value + '%';})
+      .attr('font-size', 12);
+
+  //remove this later
+  arcs.append("svg:text")
+      .attr("transform", function(d){
+          d.innerRadius = 150; /* Distance of label to the center*/
+          d.outerRadius = r;
+          return "translate(" + arc.centroid(d) + ")";}
+      )
+      .attr("text-anchor", "middle")
+      .text( function(d, i) {return newData[i].category;})
+      .attr('font-size', 12);
 }

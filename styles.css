@@ -1,7 +1,5 @@
 body {
   background-color: white;
-
-  
 }
 
 select {
@@ -55,7 +53,7 @@ div.tooltip {
   display: inline-block;
 }
 
-.barChart{
+.graph{
   background-color: white;
   border: 1px solid black;
 
