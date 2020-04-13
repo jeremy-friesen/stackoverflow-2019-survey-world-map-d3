@@ -280,7 +280,10 @@ function selected(d) {
   console.log(countryClicked); 
 
   //Aabids function for his graphs can go here and he can pass it country name
-  displayGraphs(countryClicked);
+  let attribute = "languages";
+  displayBarCharts(countryClicked, attribute, 1);
+  attribute = "platforms";
+  displayBarCharts(countryClicked, attribute, 2);
 
   d3.select('.selected').classed('selected', false);
   d3.select(this).classed('selected', true);
@@ -316,18 +319,32 @@ function zoomed() {
     .style("stroke-width", 1 / s);
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ///Create graphs
-
-
 //Called when a country on the map is clicked
-function displayGraphs(countryClicked){
+function displayBarCharts(countryClicked, attribute, index){
   //use the parsed data
   console.log(parsedData[countryClicked]);
-  let data = parsedData[countryClicked].languages;
+  let data = parsedData[countryClicked][attribute];
   console.log(data);
   //console.log(Object.keys(data));
   //console.log(Object.values(data));
 
+  let maxY = Math.max(...Object.values(data));
   let newData = [];
 
   let maxLength = 10;
@@ -340,9 +357,9 @@ function displayGraphs(countryClicked){
 
   console.log("newData = ", newData);
 
-  let div = document.getElementById('vis1');
+  let div = document.getElementById(`vis${index}`);
   if(div.hasChildNodes()){
-    let removeTable = document.getElementById('svgChart');
+    let removeTable = document.getElementById(`svgChart${index}`);
     removeTable.parentNode.removeChild(removeTable);
   }
 
@@ -359,13 +376,13 @@ function displayGraphs(countryClicked){
 
   const xScale = d3.scale.ordinal()
                    .rangeRoundBands([0, chartWidth], .1)
-                   .domain(newData.map((s) => s.x))
-  console.log("domain = ", xScale.domain())
+                   .domain(newData.map((d) => d.x))
+  //console.log("domain = ", xScale.domain())
 
   const yScale = d3.scale.linear()
                    .range([chartHeight, 0])
-                   .domain([0, d3.max(newData, d => d.y)]);
-  console.log("domain = ", yScale.domain())
+                   .domain([0, maxY]);
+  //console.log("domain = ", yScale.domain())
 
   const xAxis = d3.svg.axis()
                   .scale(xScale)
@@ -375,9 +392,10 @@ function displayGraphs(countryClicked){
                   .scale(yScale)
                   .orient("left")
   
-  const svg = d3.select('#vis1')
+  const svg = d3.select(`#vis${index}`)
                 .append('svg')
-                  .attr('id', 'svgChart')
+                  .attr('id', `svgChart${index}`)
+                  .attr('class', 'graph')
                   .attr('width', width)
                   .attr('height', height);
   
@@ -387,31 +405,35 @@ function displayGraphs(countryClicked){
   // chart title
   svg.append('text')
         .attr('x', margin + chartWidth / 1.75)
-        .attr('y', margin - 20)
+        .attr('y', margin - 30)
         .attr('text-anchor', 'middle')
-        .text(`Top ${maxLength} Languages in ${countryClicked}`);
+        .text(`Top ${maxLength} ${attribute} in ${countryClicked}`)
+        .attr('font-size', 22)
+        .attr('font-weight', 'bold')
+        .style("text-decoration", "underline");
 
   // x-axis and label
   canvas.append('g')
            .attr('transform', `translate(${margin}, ${chartHeight})`)
            .call(xAxis)
-          .attr('font-size', 10);
+           .attr('font-size', 10);
 
 
   svg.append('text')
          .attr('x', margin + chartWidth / 2 + margin)
-         .attr('y', chartHeight + 2 * margin - 15)
+         .attr('y', chartHeight + 2 * margin - 5)
          .attr('text-anchor', 'middle')
-         .text('Language');
+         .text(`${attribute}`);
 
   // y-axis and label
   canvas.append('g')
            .attr('transform', `translate(50, 0)`)
-           .call(yAxis);
+           .call(yAxis)
+           .attr('font-size', 15);
 
   svg.append('text')
          .attr('x', margin + -(chartWidth / 1.7))
-         .attr('y', margin)
+         .attr('y', margin - 5)
          .attr('transform', 'rotate(-90)')
          .attr('text-anchor', 'middle')
          .text('Count');
@@ -421,7 +443,7 @@ function displayGraphs(countryClicked){
                      .data(newData)
                      .enter()
                         .append('rect')
-                            .attr('x', (data) => margin + xScale(data.x))
+                            .attr('x', (d) => margin + xScale(d.x))
                             .attr('y', chartHeight)
                             .attr('height', 0)
                             .attr('width', xScale.rangeBand())
@@ -442,8 +464,8 @@ function displayGraphs(countryClicked){
   bars.transition()
       .ease("elastic")
       .duration(800)
-      .delay((data, index) => index * 50)
-      .attr('y', (data) => yScale(data.y))
-      .attr('height', (data)  => chartHeight - yScale(data.y))
+      .delay((d, index) => index * 50)
+      .attr('y', (d) => yScale(d.y))
+      .attr('height', (d)  => chartHeight - yScale(d.y))
 
 }
