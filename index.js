@@ -15,6 +15,8 @@ var initX;
 var s = 1;
 var mouseClicked = false;
 
+// contains the path references for each country
+var countries;
 
 //This variable will be used to store the country name when the user clicks on a country
 var countryClicked = '';
@@ -64,7 +66,6 @@ var tooltip = d3.select("#map")
   .append("div")
   .attr("class", "tooltip hidden");
 
-//need this for correct panning
 var g = svg.append("g");
 
 var languageColours = {};
@@ -73,12 +74,11 @@ d3.json("colours.json", function(error, data){
     languageColours[lang] = data[lang].color;
   }
 });
-//console.log(languageColours);
 
 var topLanguages = [];
 var topLanguagesColours = [];
-
 var topPlatforms = [];
+var topDeveloperTypes = [];
 
 countryTops = {};
 
@@ -104,10 +104,18 @@ d3.json("data.json", function(error, data){
     if (topPlatforms.indexOf(topPlatform) == -1) {
       topPlatforms.push(topPlatform);
     }
+
+    // parse top developer types
+    var topDeveloperType = Object.keys(data[country].developerTypes)[0];
+    if (topDeveloperType == "NA") topDeveloperType = Object.keys(data[country].developerTypes)[1];
+    if (topDeveloperType == undefined) topDeveloperType = "NA";
+    if (topDeveloperTypes.indexOf(topDeveloperType) == -1) {
+      topDeveloperTypes.push(topDeveloperType);
+    }
   }
 
-  countryTops = {"top languages": topLanguages, "top platforms": topPlatforms};
-  console.log(countryTops);
+  countryTops = {"top languages": topLanguages, "top platforms": topPlatforms, "top developer types": topDeveloperTypes};
+  console.log(countryTops); //remove
 
   var dropdown = d3.select("body").insert("select", ":first-child")
     .attr("class", "select")
@@ -152,7 +160,9 @@ d3.json("data.json", function(error, data){
         if (selectedAttribute == "top languages") {
           var ret = topLanguagesColours[topLanguages.indexOf(value)];
         } else {
-          var ret = d3.scale.ordinal(d3["schemeSet3"])(value);
+          var ret = d3.scale.category20().domain(countryTops[selectedAttribute])(value);
+          if(value == "NA")
+            return "white"
         }
         if (ret == undefined)
           return "white";
@@ -168,13 +178,13 @@ d3.json("data.json", function(error, data){
           var ret = topLanguagesColours[topLanguages.indexOf(value)];
         } else {
           var ret = d3.scale.category20().domain(countryTops[selectedAttribute])(value);
-          console.log(ret);
+          if(value == "NA")
+            return "white"
         }
         if (ret == undefined)
           return "white";
         return ret;
       })
-      .attr('stroke', function () { return "black" });
 
     var texts = legend.selectAll('text')
       .data(countryTops[selectedAttribute], function (d) { return d; });
@@ -189,6 +199,8 @@ d3.json("data.json", function(error, data){
   
     texts.transition()
       .attr('y', function (d, i) { return 110 + i * 25 })
+
+    updateMapColours(selectedAttribute);
   };
 
   dropdown.on("change", dropdownChange);
@@ -202,13 +214,52 @@ console.log(topLanguages);
 console.log("topLanguagesColours: ");
 console.log(topLanguagesColours);
 
+// update the colour of each country, by attribute parameter
+function updateMapColours(attribute){
+  if(countries != undefined){
+    console.log(countries);
+    console.log(countryData);
+
+    var altName = attribute;
+    if(attribute == 'top languages'){
+      altName = 'languages';
+    } else if(attribute == 'top platforms'){
+      altName = 'platforms';
+    } else if(attribute == 'top developer types'){
+      altName = 'developerTypes';
+    }
+
+    countries.attr("style", function (d) {
+      var colour = "white";
+      if (d.properties.name != undefined && countryData[d.properties.name] != undefined){
+        //countryData[d.properties.name][altName][0]
+        var value = Object.keys(countryData[d.properties.name][altName])[0];
+        if(value == "NA" && Object.keys(countryData[d.properties.name][altName])[1] != undefined)
+          value = Object.keys(countryData[d.properties.name][altName])[1];
+        var colour = "white"
+        if (altName == "languages") {
+          colour = topLanguagesColours[topLanguages.indexOf(value)];
+        } else {
+          colour = d3.scale.category20().domain(countryTops[attribute])(value);
+          if (value == "NA")
+            colour = "white"
+        }
+      }
+      console.log(colour);
+      return "fill:" + colour + ";";
+    })
+    console.log(countryData);
+    console.log(countryTops);
+    console.log(parsedData);
+  }
+}
+
+
 // get json data and draw it
 d3.json("world-countries.json", function (error, world) {
   if (error) return console.error(error);
-  //console.log(world);
-  ////console.log(topojson.feature(world, world.objects.countries));
-  //countries
-  g.append("g")
+
+  countries = g.append("g")
     .attr("class", "boundary")
     .selectAll("boundary")
     .attr("width", width-200)
@@ -241,7 +292,6 @@ d3.json("world-countries.json", function (error, world) {
       }
       return "fill:" + colour + ";";
     })
-    
     .on('click', selected)
     .on("mousemove", showTooltip)
     .on("mouseout", function (d, i) {
@@ -327,20 +377,6 @@ function zoomed() {
   d3.selectAll(".boundary")
     .style("stroke-width", 1 / s);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 ///Create graphs
