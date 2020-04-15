@@ -1,5 +1,5 @@
 var width = 962,
-rotated = 0,
+rotated = 90,
 height = 502;
 var colourList = ['lightgreen', 'green', 'blue', 'palevioletred', 'red', 'yellow']
 
@@ -55,10 +55,8 @@ function rotateMap(endX) {
     .attr('d', path);
 }
 
-console.log('body margin: ' + document.getElementsByTagName('body')[0].style.marginLeft)
 //for tooltip
 var offsetL = document.getElementById('map').offsetLeft + 10;
-// + document.getElementsByClassName();
 var offsetT = document.getElementById('map').offsetTop + 10;
 
 var path = d3.geo.path()
@@ -119,15 +117,8 @@ d3.json("data.json", function(error, data){
   countryTops = {"top languages": topLanguages, "top platforms": topPlatforms, "top developer types": topDeveloperTypes};
   console.log(countryTops); //remove
 
-
-  var dropdowndiv = d3.select("body").insert("div", ":first-child");
-  dropdowndiv.insert("a").html("Colour attribute:");
-
-  var dropdown = dropdowndiv.insert("select")
+  var dropdown = d3.select("body").insert("div", ":first-child").insert("select")
     .attr("class", "select")
-
-  // Page Title
-  d3.select("body").insert("h2", ":first-child").html("Stack Overflow Developer Survey: World Map")
 
   dropdown.selectAll("option")
     .data(Object.keys(countryTops))
@@ -340,13 +331,13 @@ function selected(d) {
 
   //Aabids function for his graphs can go here and he can pass it country name
   let attribute = "languages";
-  displayBarCharts(countryClicked, attribute, 1);
+  displayBarCharts(countryClicked, attribute, "Languages", true, 1);
   attribute = "platforms";
-  displayBarCharts(countryClicked, attribute, 2);
+  displayBarCharts(countryClicked, attribute, "Platforms", true, 2);
   attribute = "yearsCoding";
-  displayBarCharts(countryClicked, attribute, 3);
+  displayBarCharts(countryClicked, attribute, "Coding Experience", false, 3);
   attribute = "developerTypes";
-  displayBarCharts(countryClicked, attribute, 4);
+  displayBarCharts(countryClicked, attribute, "Developer Types", true, 4);
   
   attribute = "student";
   displayPieCharts(countryClicked, attribute, 5);
@@ -394,7 +385,7 @@ function zoomed() {
 // Additional charts
 
 //Called when a country on the map is clicked
-function displayBarCharts(countryClicked, attribute, index){
+function displayBarCharts(countryClicked, attribute, xLabel, bool, index){
   //use the parsed data
   //console.log(parsedData[countryClicked]);
   let data = parsedData[countryClicked][attribute];
@@ -460,12 +451,19 @@ function displayBarCharts(countryClicked, attribute, index){
   const canvas = svg.append('g')
                       .attr('transform', `translate(${margin}, ${margin})`);
   
+  let title;
+  if (bool == true){
+    title = `Top ${maxLength} ${xLabel} in ${countryClicked}`
+  }
+  else{
+    title = `${label} in ${countryClicked}`
+  }
   // chart title
   svg.append('text')
         .attr('x', margin + chartWidth / 1.75)
         .attr('y', margin - 30)
         .attr('text-anchor', 'middle')
-        .text(`Top ${maxLength} ${attribute} in ${countryClicked}`)
+        .text(title)
         .attr('font-size', 22)
         .attr('font-weight', 'bold')
         .style("text-decoration", "underline");
@@ -486,8 +484,8 @@ function displayBarCharts(countryClicked, attribute, index){
         .attr('y', chartHeight + 2 * margin + 60)
         .attr('text-anchor', 'middle')
         .text(`${attribute}`)
-        .attr('font-weight', 'bold');
-
+        .attr('font-weight', 'bold')
+        .style('fill', 'red');
     
 
   // y-axis and label
@@ -502,7 +500,8 @@ function displayBarCharts(countryClicked, attribute, index){
         .attr('transform', 'rotate(-90)')
         .attr('text-anchor', 'middle')
         .text('Count')
-        .attr('font-weight', 'bold');
+        .attr('font-weight', 'bold')
+        .style('fill', 'red');
 
 
   //const legend = canvas.
