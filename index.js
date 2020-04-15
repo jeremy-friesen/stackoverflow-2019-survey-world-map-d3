@@ -1,5 +1,5 @@
 var width = 962,
-rotated = 90,
+rotated = 0,
 height = 502;
 var colourList = ['lightgreen', 'green', 'blue', 'palevioletred', 'red', 'yellow']
 
@@ -55,8 +55,10 @@ function rotateMap(endX) {
     .attr('d', path);
 }
 
+console.log('body margin: ' + document.getElementsByTagName('body')[0].style.marginLeft)
 //for tooltip
 var offsetL = document.getElementById('map').offsetLeft + 10;
+// + document.getElementsByClassName();
 var offsetT = document.getElementById('map').offsetTop + 10;
 
 var path = d3.geo.path()
@@ -117,8 +119,15 @@ d3.json("data.json", function(error, data){
   countryTops = {"top languages": topLanguages, "top platforms": topPlatforms, "top developer types": topDeveloperTypes};
   console.log(countryTops); //remove
 
-  var dropdown = d3.select("body").insert("div", ":first-child").insert("select")
+
+  var dropdowndiv = d3.select("body").insert("div", ":first-child");
+  dropdowndiv.insert("a").html("Colour attribute:");
+
+  var dropdown = dropdowndiv.insert("select")
     .attr("class", "select")
+
+  // Page Title
+  d3.select("body").insert("h2", ":first-child").html("Stack Overflow Developer Survey: World Map")
 
   dropdown.selectAll("option")
     .data(Object.keys(countryTops))
