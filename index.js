@@ -414,9 +414,9 @@ function displayBarCharts(countryClicked, attribute, index){
 
   const margin = 50;
   const width = 500;
-  const height = 400;
+  const height = 500;
   const chartWidth = width - 2 * margin;
-  const chartHeight = height - 2 * margin;
+  const chartHeight = height - 2 * margin - 80;
 
   const colourScale = d3.scale.ordinal()
                         //.domain([0, d3.max(data, d => d.y)])
@@ -465,14 +465,20 @@ function displayBarCharts(countryClicked, attribute, index){
   canvas.append('g')
     .attr('transform', `translate(${margin}, ${chartHeight})`)
     .call(xAxis)
-    .attr('font-size', 10)
-
+    .selectAll("text")  
+      .style("text-anchor", "end")
+      .attr("dx", "-.8em")
+      .attr("dy", ".15em")
+      .attr("transform", "rotate(-65)")
+      .attr('font-size', 10);
 
   svg.append('text')
-    .attr('x', margin + chartWidth / 2 + margin)
-    .attr('y', chartHeight + 2 * margin - 5)
-    .attr('text-anchor', 'middle')
-    .text(`${attribute}`)
+        .attr('x', margin + chartWidth / 2 + margin)
+        .attr('y', chartHeight + 2 * margin + 60)
+        .attr('text-anchor', 'middle')
+        .text(`${attribute}`)
+        .attr('font-weight', 'bold');
+
     
 
   // y-axis and label
@@ -482,11 +488,13 @@ function displayBarCharts(countryClicked, attribute, index){
            .attr('font-size', 15);
 
   svg.append('text')
-         .attr('x', margin + -(chartWidth / 1.7))
-         .attr('y', margin - 5)
-         .attr('transform', 'rotate(-90)')
-         .attr('text-anchor', 'middle')
-         .text('Count');
+        .attr('x', margin + -(chartWidth / 1.7))
+        .attr('y', margin - 10)
+        .attr('transform', 'rotate(-90)')
+        .attr('text-anchor', 'middle')
+        .text('Count')
+        .attr('font-weight', 'bold');
+
 
   //const legend = canvas.
   var xs = [];
