@@ -1,5 +1,5 @@
 var width = 962,
-rotated = 90,
+rotated = 0,
 height = 502;
 var colourList = ['lightgreen', 'green', 'blue', 'palevioletred', 'red', 'yellow']
 
@@ -56,7 +56,8 @@ function rotateMap(endX) {
 }
 
 //for tooltip
-var offsetL = document.getElementById('map').offsetLeft + 10;
+var offsetL = document.getElementById('map').offsetLeft + 200;
+// + document.getElementsByClassName();
 var offsetT = document.getElementById('map').offsetTop + 10;
 
 var path = d3.geo.path()
@@ -117,8 +118,14 @@ d3.json("data.json", function(error, data){
   countryTops = {"top languages": topLanguages, "top platforms": topPlatforms, "top developer types": topDeveloperTypes};
   console.log(countryTops); //remove
 
-  var dropdown = d3.select("body").insert("div", ":first-child").insert("select")
+  var dropdowndiv = d3.select("body").insert("div", ":first-child");
+  dropdowndiv.insert("a").html("Colour attribute:");
+
+  var dropdown = dropdowndiv.insert("select")
     .attr("class", "select")
+
+  // Page Title
+  d3.select("body").insert("h2", ":first-child").html("Stack Overflow Developer Survey (2019): World Map ")
 
   dropdown.selectAll("option")
     .data(Object.keys(countryTops))
@@ -456,7 +463,7 @@ function displayBarCharts(countryClicked, attribute, xLabel, bool, index){
     title = `Top ${maxLength} ${xLabel} in ${countryClicked}`
   }
   else{
-    title = `${label} in ${countryClicked}`
+    title = `${xLabel} in ${countryClicked}`
   }
   // chart title
   svg.append('text')
