@@ -379,13 +379,17 @@ function zoomed() {
 }
 
 
-///Create graphs
+
+
+
+// Additional charts
+
 //Called when a country on the map is clicked
 function displayBarCharts(countryClicked, attribute, index){
   //use the parsed data
-  console.log(parsedData[countryClicked]);
+  //console.log(parsedData[countryClicked]);
   let data = parsedData[countryClicked][attribute];
-  console.log(data);
+  //console.log(data);
   //console.log(Object.keys(data));
   //console.log(Object.values(data));
 
@@ -400,7 +404,7 @@ function displayBarCharts(countryClicked, attribute, index){
     newData.push({'x': `${Object.keys(data)[i]}`, "y": `${Object.values(data)[i]}`});
   }
 
-  console.log("newData = ", newData);
+  //console.log("newData = ", newData);
 
   let div = document.getElementById(`vis${index}`);
   if(div.hasChildNodes()){
@@ -459,16 +463,17 @@ function displayBarCharts(countryClicked, attribute, index){
 
   // x-axis and label
   canvas.append('g')
-           .attr('transform', `translate(${margin}, ${chartHeight})`)
-           .call(xAxis)
-           .attr('font-size', 10);
+    .attr('transform', `translate(${margin}, ${chartHeight})`)
+    .call(xAxis)
+    .attr('font-size', 10)
 
 
   svg.append('text')
-         .attr('x', margin + chartWidth / 2 + margin)
-         .attr('y', chartHeight + 2 * margin - 5)
-         .attr('text-anchor', 'middle')
-         .text(`${attribute}`);
+    .attr('x', margin + chartWidth / 2 + margin)
+    .attr('y', chartHeight + 2 * margin - 5)
+    .attr('text-anchor', 'middle')
+    .text(`${attribute}`)
+    
 
   // y-axis and label
   canvas.append('g')
@@ -482,37 +487,44 @@ function displayBarCharts(countryClicked, attribute, index){
          .attr('transform', 'rotate(-90)')
          .attr('text-anchor', 'middle')
          .text('Count');
+
+  //const legend = canvas.
+  var xs = [];
+  for (var i = 0; i < newData.length; i++) {
+    xs.push(newData[i].x);
+  }
   
   // the bar chart
   const bars = canvas.selectAll('rect')
-                     .data(newData)
-                     .enter()
-                        .append('rect')
-                            .attr('x', (d) => margin + xScale(d.x))
-                            .attr('y', chartHeight)
-                            .attr('height', 0)
-                            .attr('width', xScale.rangeBand())
-                            .attr('fill', 'blue')
-                            .on('mouseenter', function(source, index) {
-                                d3.select(this)
-                                  .transition()
-                                  .duration(200)
-                                  .attr('opacity', 0.5);
-                            })
-                            .on('mouseleave', function(source, index) {
-                              d3.select(this)
-                                  .transition()
-                                  .duration(200)
-                                  .attr('opacity', 1.0);
-                            });
-
+    .data(newData)
+    .enter()
+      .append('rect')
+          .attr('x', (d) => margin + xScale(d.x))
+          .attr('y', chartHeight)
+          .attr('height', 0)
+          .attr('width', xScale.rangeBand())
+          .on('mouseenter', function(source, index) {
+              d3.select(this)
+                .transition()
+                .duration(200)
+                .attr('opacity', 0.5);
+          })
+          .on('mouseleave', function(source, index) {
+            d3.select(this)
+                .transition()
+                .duration(200)
+                .attr('opacity', 1.0);
+          });
+  
   bars.transition()
-      .ease("elastic")
-      .duration(800)
-      .delay((d, index) => index * 50)
-      .attr('y', (d) => yScale(d.y))
-      .attr('height', (d)  => chartHeight - yScale(d.y))
-
+    .ease("elastic")
+    .duration(800)
+    .delay((d, index) => index * 50)
+    .attr('y', (d) => yScale(d.y))
+    .attr('height', (d)  => chartHeight - yScale(d.y))
+    .attr('fill', function (d) {
+      return d3.scale.category20().domain(xs)(d.x);
+    })
 }
 
 
@@ -528,9 +540,9 @@ function displayPieCharts(countryClicked, attribute, index){
     removeTable.parentNode.removeChild(removeTable);
   }
 
-  console.log(parsedData[countryClicked]);
+  //console.log(parsedData[countryClicked]);
   let data = parsedData[countryClicked][attribute];
-  console.log(data);
+  //console.log(data);
   //console.log(Object.keys(data));
   //console.log(Object.values(data));
 
@@ -543,14 +555,14 @@ function displayPieCharts(countryClicked, attribute, index){
   }
 
   let totalCount = d3.sum(Object.values(data))
-  console.log("totalCount", totalCount);
+  //console.log("totalCount", totalCount);
   for (let i = 0; i < maxLength; i++){
     let percent = Math.round(Object.values(data)[i]/totalCount * 100)
-    console.log("divide = ", percent)
+    //console.log("divide = ", percent)
     newData.push({'category': `${Object.keys(data)[i]}`, "value": `${percent}`});
   }
 
-  console.log("newData = ", newData);
+  //console.log("newData = ", newData);
 
   var vis = d3.select(`#vis${index}`)
                 .append("svg:svg")
