@@ -21,16 +21,16 @@ var countries;
 //This variable will be used to store the country name when the user clicks on a country
 var countryClicked = '';
 
-
+// Adapted from "d3 map with states and countries", http://bl.ocks.org/MaciejKus/61e9ff1591355b00c1c1caf31e76a668
 var projection = d3.geo.mercator()
   .scale(153)
   .translate([width / 2, height / 1.5])
   .rotate([rotated, 0, 0]);
-
+// Adapted from "d3 map with states and countries", http://bl.ocks.org/MaciejKus/61e9ff1591355b00c1c1caf31e76a668
 var zoom = d3.behavior.zoom()
   .scaleExtent([1, 20])
   .on("zoom", zoomed);
-
+// Adapted from "d3 map with states and countries", http://bl.ocks.org/MaciejKus/61e9ff1591355b00c1c1caf31e76a668
 var svg = d3.select("body").append("svg")
   .attr("width", width+200)
   .attr("height", height)
@@ -48,7 +48,7 @@ var svg = d3.select("body").append("svg")
     mouseClicked = false;
   })
   .call(zoom);
-
+// Adapted from "d3 map with states and countries", http://bl.ocks.org/MaciejKus/61e9ff1591355b00c1c1caf31e76a668
 function rotateMap(endX) {
   projection.rotate([rotated + (endX - initX) * 360 / (s * width), 0, 0])
   g.selectAll('path')
