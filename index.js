@@ -347,9 +347,9 @@ function selected(d) {
   displayBarCharts(countryClicked, attribute, "Developer Types", true, 4);
   
   attribute = "student";
-  displayPieCharts(countryClicked, attribute, 5);
+  displayPieCharts(countryClicked, attribute, "Student", 5);
   attribute = "genders";
-  displayPieCharts(countryClicked, attribute, 6);
+  displayPieCharts(countryClicked, attribute, "Gender", 6);
 
   d3.select('.selected').classed('selected', false);
   d3.select(this).classed('selected', true);
@@ -490,7 +490,7 @@ function displayBarCharts(countryClicked, attribute, xLabel, bool, index){
         .attr('x', margin + chartWidth / 2 + margin)
         .attr('y', chartHeight + 2 * margin + 60)
         .attr('text-anchor', 'middle')
-        .text(`${attribute}`)
+        .text(`${xLabel}`)
         .attr('font-weight', 'bold')
         .style('fill', 'red');
     
@@ -551,10 +551,10 @@ function displayBarCharts(countryClicked, attribute, xLabel, bool, index){
 }
 
 
-function displayPieCharts(countryClicked, attribute, index){
+function displayPieCharts(countryClicked, attribute, xLabel, index){
   var w = 500;
-  var h = 400;
-  var r = h/2;
+  var h = 500;
+  var r = h/3;
   var color = d3.scale.category10();
 
   let div = document.getElementById(`vis${index}`);
@@ -595,9 +595,19 @@ function displayPieCharts(countryClicked, attribute, index){
                   .attr("width", w)
                   .attr("height", h)
                   .append("svg:g")
-                    .attr("transform", "translate(" + r * 1.35 + "," + r + ")");
+                    .attr("transform", "translate(" + r * 1.62 + "," + r * 1.62 + ")");
 
   var pie = d3.layout.pie().value(function(d){return d.value;});
+
+ // chart title
+  vis.append('text')
+        .attr('x', 0)
+        .attr('y', -240)
+        .attr('text-anchor', 'middle')
+        .text(`${xLabel} Distribution in ${countryClicked}`)
+        .attr('font-size', 22)
+        .attr('font-weight', 'bold')
+        .style("text-decoration", "underline");
 
   // Declare an arc generator function
   var arc = d3.svg.arc().outerRadius(r);
@@ -623,11 +633,12 @@ function displayPieCharts(countryClicked, attribute, index){
   //remove this later
   arcs.append("svg:text")
       .attr("transform", function(d){
-          d.innerRadius = 150; /* Distance of label to the center*/
+          d.innerRadius = 200; /* Distance of label to the center*/
           d.outerRadius = r;
           return "translate(" + arc.centroid(d) + ")";}
       )
       .attr("text-anchor", "middle")
       .text( function(d, i) {return newData[i].category;})
+      
       .attr('font-size', 12);
 }
