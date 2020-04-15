@@ -117,7 +117,7 @@ d3.json("data.json", function(error, data){
   countryTops = {"top languages": topLanguages, "top platforms": topPlatforms, "top developer types": topDeveloperTypes};
   console.log(countryTops); //remove
 
-  var dropdown = d3.select("body").insert("select", ":first-child")
+  var dropdown = d3.select("body").insert("div", ":first-child").insert("select")
     .attr("class", "select")
 
   dropdown.selectAll("option")
