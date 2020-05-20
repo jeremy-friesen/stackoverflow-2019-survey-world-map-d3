@@ -125,6 +125,7 @@ d3.json("data.json", function(error, data){
     .attr("class", "select")
 
   // Page Title
+  d3.select("body").insert("a", ":first-child").attr("href", "https://github.com/jeremydavidfriesen/stackoverflow-2019-survey-world-map-d3").html("Source");
   d3.select("body").insert("h2", ":first-child").html("Stack Overflow Developer Survey (2019): World Map ")
 
   dropdown.selectAll("option")
