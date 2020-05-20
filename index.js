@@ -5,7 +5,7 @@ var colourList = ['lightgreen', 'green', 'blue', 'palevioletred', 'red', 'yellow
 
 //Store parsed data
 var parsedData;
-d3.json("/data.json", function(data) {
+d3.json("https://jeremydavidfriesen.github.io/stackoverflow-2019-survey-world-map-d3/data.json", function(data) {
   parsedData = data;
 });
 
