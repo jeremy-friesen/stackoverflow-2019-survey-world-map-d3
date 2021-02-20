@@ -6,4 +6,4 @@
 - [Gagandeep Pabla](https://github.com/CrownPab)
 
 
-## [View Visualization](https://jeremydavidfriesen.github.io/stackoverflow-2019-survey-world-map-d3/)
+## [View Visualization](https://jeremy-friesen.github.io/stackoverflow-2019-survey-world-map-d3/)
